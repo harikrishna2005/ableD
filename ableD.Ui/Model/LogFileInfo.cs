@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows;
 
-namespace DataProcessor
+namespace ableD.Ui.Models
 {
     public class LogFileInfo
     {
@@ -42,6 +42,9 @@ namespace DataProcessor
 
         #endregion
 
+        #region private Search Fields
+
+        
         private readonly string Const_SerialNumber = @"[0-9]{3,15}";
         private readonly string Const_TransactionDate_YYYY = @"[0-9]{4}";
         private readonly string Const_TransactionDate_MM = @"[0-9]{2}";
@@ -79,72 +82,75 @@ namespace DataProcessor
         private readonly string Const_OpenBracket = @"(";
         private readonly string Const_CloseBracket = @")";
         private readonly string Const_All = "ALL";
+        private readonly string Const_Empty = "";
 
 
 
+        #endregion
 
 
 
 
         private string _serailNumber; public string SerialNumber
         {
-            get { return Const_SerialNumber == _serailNumber ? Const_All : _serailNumber; }
-            set { _serailNumber = value == Const_All? Const_SerialNumber :  value; ; }
+            get { return Const_SerialNumber == _serailNumber ? Const_Empty : _serailNumber; }
+            set { _serailNumber =  value; ; }
         }
         
         private string _transactionDate_YYYY; public string TransactionDate_YYYY
         {
-            get { return _transactionDate_YYYY; }
+            
+            get { return Const_TransactionDate_YYYY==_transactionDate_YYYY ? Const_Empty : _transactionDate_YYYY; }
             set { _transactionDate_YYYY = value; }
         }
         private string _transactionDate_MM; public string TransactionDate_MM
         {
-            get { return _transactionDate_MM; }
+            get { return Const_TransactionDate_MM== _transactionDate_MM ? Const_Empty : _transactionDate_MM ; }
             set { _transactionDate_MM = value; }
         }
         private string _transactionDate_DD; public string TransactionDate_DD
         {
-            get { return _transactionDate_DD; }
+            get { return Const_TransactionDate_DD == _transactionDate_DD ? Const_Empty : _transactionDate_DD; }
             set { _transactionDate_DD = value; }
         }
         private string _transactionTime_HH; public string TransactionTime_HH
         {
-            get { return _transactionTime_HH; }
+            get { return Const_TransactionTime_HH == _transactionTime_HH ? Const_Empty : _transactionTime_HH; }
             set { _transactionTime_HH = value; }
         }
         private string _transactionTime_MM; public string TransactionTime_MM
         {
-            get { return _transactionTime_MM; }
+            get { return Const_TransactionTime_MM == _transactionTime_MM ? Const_Empty : _transactionTime_MM; }
             set { _transactionTime_MM = value; }
         }
         private string _transactionTime_SS; public string TransactionTime_SS
         {
-            get { return _transactionTime_SS; }
+            get { return Const_TransactionTime_SS == _transactionTime_SS ? Const_Empty : _transactionTime_SS; }
             set { _transactionTime_SS = value; }
         }
         private string _transactionTime_MS; public string TransactionTime_MS
         {
-            get { return _transactionTime_MS; }
+            get { return Const_TransactionTime_MS == _transactionTime_MS ? Const_Empty : _transactionTime_MS; }
             set { _transactionTime_MS = value; }
         }
         private string _allInfo; public string AllInfo
         {
-            get { return _allInfo; }
+            get { return Const_AllInfo ==  _allInfo ? Const_Empty : _allInfo ; }
             set { _allInfo = value; }
         }
         private string _transactionId_Full; public string TransactionId_Full
         {
-            get { return _transactionId_Full; }
+            get { return Const_TransactionId_Full == _transactionId_Full ? Const_Empty : _transactionId_Full; }
             set { _transactionId_Full = value; }
         }
         private string _lsn; public string Lsn
         {
-            get { return  Const_Lsn == _lsn ? Const_All : _lsn; }
-            set { _lsn =  value == Const_All ? Const_Lsn : value; ; }
+            get { return Const_Lsn == _lsn ? Const_Empty : _lsn; }
+            set { _lsn = value; ; }
         }
         private string _funcId_Fwk_Sch; public string FuncId_Fwk_Sch
         {
-            get { return _funcId_Fwk_Sch; }
+            get { return Const_FuncId_Fwk_Sch == _funcId_Fwk_Sch ? Const_Empty : _funcId_Fwk_Sch; }
             set { _funcId_Fwk_Sch = value; }
         }
 
@@ -152,6 +158,7 @@ namespace DataProcessor
         private string _resinResoutAndOthersWithSQUAREBrackets;
 
         public List<string> ResinResoutAndOthersList = new List<string>();
+        
 
 
         private string targetSearchPattern;
@@ -171,7 +178,7 @@ namespace DataProcessor
             //string targetPattern = $"{Const_SerialNumber}:{Const_SpaceORTab_Mandatory}{Const_TransactionDate_YYYY}-{Const_TransactionDate_MM}-{Const_TransactionDate_DD}{Const_SpaceORTab_Mandatory}{Const_TransactionTime_HH}:{Const_TransactionTime_MM}:{Const_TransactionTime_SS}.{Const_TransactionTime_MS}{Const_SpaceORTab_Mandatory}{Const_AllInfo}{Const_SpaceORTab_Mandatory}{Const_TransactionId_Part1}-{Const_TransactionId_Part2}_{Const_TransactionId_Part3}{Const_SpaceORTab_Mandatory}{Const_Lsn}{Const_SpaceORTab_Mandatory}{Const_FuncId_Fwk_Sch}{Const_SpaceORTab_Mandatory}{Const_ResInOut_Sql_Heap_SvrStartEnd}";
             // SUCCESS - string targetPattern = $"{Const_SerialNumber}:{Const_SpaceORTab_Mandatory}{Const_TransactionDate_YYYY}-{Const_TransactionDate_MM}-{Const_TransactionDate_DD}{Const_SpaceORTab_Mandatory}{Const_TransactionTime_HH}:{Const_TransactionTime_MM}:{Const_TransactionTime_SS}.{Const_TransactionTime_MS}{Const_SpaceORTab_Mandatory}";
             //string targetPattern = $"{Const_SerialNumber}:{Const_SpaceORTab_Mandatory}{Const_TransactionDate_YYYY}-{Const_TransactionDate_MM}-{Const_TransactionDate_DD}{Const_SpaceORTab_Mandatory}{Const_TransactionTime_HH}:{Const_TransactionTime_MM}:{Const_TransactionTime_SS}.{Const_TransactionTime_MS}{Const_SpaceORTab_Mandatory}{Const_AllInfo}{Const_SpaceORTab_Mandatory}{Const_TransactionId_Part1}-{Const_TransactionId_Part2}_{Const_TransactionId_Part3}{Const_SpaceORTab_Mandatory}{Const_Lsn}{Const_SpaceORTab_Mandatory}";
-            string keka = _serailNumber == Const_SerialNumber ? Const_SerialNumber : _serailNumber;
+            //string keka = _serailNumber == Const_SerialNumber ? Const_SerialNumber : _serailNumber;
             _serailNumber = string.IsNullOrEmpty(_serailNumber) ? Const_SerialNumber : _serailNumber;
             
             _transactionDate_YYYY = string.IsNullOrEmpty(_transactionDate_YYYY) ? Const_TransactionDate_YYYY : _transactionDate_YYYY;

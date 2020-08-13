@@ -3,10 +3,279 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+   xmlns:i = "http://schemas.microsoft.com/expression/2010/interactivity" 
+   xmlns:ei = "http://schemas.microsoft.com/expression/2010/interactions" 
         xmlns:local="clr-namespace:ableD.Ui"
+        xmlns:vm="clr-namespace:ableD.Ui.ViewModels"
+        xmlns:conv="clr-namespace:ableD.Ui.Converters"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+
+    <Window.Resources>
         
+        <!--Error Display-->
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        
+        <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!--<Style x:Key="CustomErrorTemplateOnErrorStyle" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="Validation.ErrorTemplate"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <Style x:Key="CustomErrorTemplateOnErrorStyle" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="Validation.ErrorTemplate">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <StackPanel>
+                                    <AdornedElementPlaceholder x:Name="adornPlaceHolder"></AdornedElementPlaceholder>
+                                    <TextBlock FontSize="11" FontStyle="Italic" Foreground="Red"
+                                       Text="{Binding ElementName=adornPlaceHolder ,
+                                                  Path=AdornedElement.(Validation.Errors)[0].ErrorContent }"></TextBlock>
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+            <!--<Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel>
+                            <AdornedElementPlaceholder x:Name="adornPlaceHolder"></AdornedElementPlaceholder>
+                            <TextBlock FontSize="11" FontStyle="Italic" Foreground="Red"
+                                       Text="{Binding ElementName=adornPlaceHolder ,
+                                                  Path=AdornedElement.(Validation.Errors)[0].ErrorContent }"></TextBlock>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>-->
+            
+        </Style>
+
+
+
+
+
+        <vm:LogFileProcessorViewModel x:Key="Key_LogFileprocessorVM"></vm:LogFileProcessorViewModel>
+
+            <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBox}">
+                            <Grid>
+                                <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1"/>
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="1,0,0,0" VerticalAlignment="Center" />
+                                <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center"
+                               Visibility="Collapsed" Foreground="Gray" FontFamily="Arial"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Text" Value=""/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Foreground" Value="DimGray"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        
+         <!--Control Visibility Resource  TRUE- Visible     FALSE - Collapsed -->
+        <conv:VisibilityBoolConverter x:Key="visibilityConverter"></conv:VisibilityBoolConverter>
+        
+        
+        <!--Converters Initialization-->
+        <conv:ComboAndTextBoxConverter x:Key="selectedValueconverter"></conv:ComboAndTextBoxConverter>
+
+    </Window.Resources>
+
+    <Window.DataContext>
+        <Binding Source="{StaticResource Key_LogFileprocessorVM}"></Binding>
+    </Window.DataContext>
+
+    <DockPanel Background="Yellow">
+
+        <StackPanel  DockPanel.Dock="Top" Orientation="Horizontal"   VerticalAlignment="Stretch" Margin="10">
+            <TextBlock Text="Log File Location  :  "></TextBlock>
+            <TextBox  Text="{Binding Path=InputFilePath, Mode=TwoWay, ValidatesOnExceptions=True}" HorizontalAlignment="Stretch" Width="500"
+                       Style="{StaticResource CustomErrorTemplateOnErrorStyle}"></TextBox>
+            <Button Content="Browse" HorizontalAlignment="Right" Margin="5" Width="100"
+                    Command="{Binding Path=BrowseFiles }"></Button>
+
+        </StackPanel>
+
+        <GroupBox DockPanel.Dock="Top" Header="Search Parameters">
+        <DockPanel FlowDirection="LeftToRight">
+            <Button DockPanel.Dock="Right" Content="Search" Margin="10" Width="80" 
+                    Command="{Binding Path=SearchLogDataCommand}" 
+                    ></Button>
+            <Grid>
+
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+
+                    </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="110" Width="Auto"  ></ColumnDefinition>
+            <ColumnDefinition MinWidth="150"></ColumnDefinition>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+
+        </Grid.ColumnDefinitions>
+
+        <Label      Grid.Row="0" Grid.Column="0" Content="LSN : " Background="AliceBlue"></Label>
+        <TextBox    Grid.Row="0" Grid.Column="1" Style="{StaticResource MyWaterMarkStyle}"  Tag="Ex:  41158"
+                    Text="{Binding Path=Lsn, Mode=TwoWay}"></TextBox>
+
+
+        <Label      Grid.Row="1" Grid.Column="0" Content="Function Id : " Background="AliceBlue"></Label>
+        <TextBox    Grid.Row="1" Grid.Column="1" Style="{StaticResource MyWaterMarkStyle}"  Tag="Ex:  FRESC00999999"
+                    Text="{Binding Path=FunctionId, Mode=TwoWay}"></TextBox>
+
+        <Label      Grid.Row="2" Grid.Column="0" Content="Transaction Id : " Background="AliceBlue"></Label>
+        <TextBox    Grid.Row="2" Grid.Column="1" Style="{StaticResource MyWaterMarkStyle}" Tag="Ex:  DPS139-50-32EA9082" 
+                    Text="{Binding Path=TransactionId, Mode=TwoWay}"></TextBox>
+
+
+        <Label      Grid.Row="3" Grid.Column="0" Content="Warning/Debug : " Background="AliceBlue"></Label>
+        <TextBox    Grid.Row="3" Grid.Column="1" Style="{StaticResource MyWaterMarkStyle}" Tag="Ex:  ALWARNING" 
+                    Text="{Binding Path=AlInfo, Mode=TwoWay}"></TextBox>
+
+        <!--<ListBox    Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Grid.RowSpan="4"></ListBox>-->
+        
+        <Button Grid.Row="0" Grid.Column="2" Content="SearchData"
+                   >
+
+
+                    </Button>
+                    <!--<ComboBox Grid.Row="4" Grid.Column="1"></ComboBox>-->
+
+                    <!--<TextBox Grid.Row="4"  Grid.Column="0" Text="{Binding ElementName=mykekabox, Path=Text, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}"  ></TextBox>-->
+                    <ComboBox Grid.Row="4" Grid.Column="1"  IsEditable="True"  x:Name="mylocalCombo" 
+                                KeyDown="mylocalCombo_KeyDown" >
+
+
+
+                        <ComboBoxItem>[RESIN] | [RESOUT]</ComboBoxItem>
+                        <ComboBoxItem>box2</ComboBoxItem>
+
+                    </ComboBox>
+                
+                    <ScrollViewer Grid.Row="4"  Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl  x:Name="myWrapPanel"
+                               ItemsSource="{Binding Path=ResInoutList_Search, Mode=TwoWay}" 
+                                    >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" MinWidth="100" ScrollViewer.VerticalScrollBarVisibility="Auto" ></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=ResInoutList_Search}"></TextBlock>
+                                        <Label Content="X"></Label>
+                                        
+                                     </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+
+                        
+                    </ItemsControl>
+                    </ScrollViewer>
+                
+                    <!--<WrapPanel Grid.Row="4"  Grid.Column="2">
+                        <TextBox Text="one"></TextBox>
+                        <TextBox Text="asdlkjhaslkjdnassadlkasjdnf"></TextBox>
+                        <TextBlock Text="one"></TextBlock>
+                        <TextBlock Text="one"></TextBlock>
+                        <TextBlock Text="one"></TextBlock>
+                        <TextBlock Text="one"></TextBlock>
+
+                    </WrapPanel>-->
+                
+                
+
+
     </Grid>
+        </DockPanel>
+
+    </GroupBox>
+
+        <!--<RichTextBox >
+            <FlowDocument>
+                <Paragraph>hello world</Paragraph>
+                <Paragraph>second paragraph</Paragraph>
+
+            </FlowDocument>
+        </RichTextBox>-->
+
+        <!--<FlowDocumentReader x:Name="FlowDocReader" Background="White"></FlowDocumentReader>-->
+
+        <!--<FlowDocumentScrollViewer 
+            Background="Black" x:Name="FlowDocReader"></FlowDocumentScrollViewer>-->
+
+        <!--<TextBox Text="super" x:Name="myUitextbox"   AcceptsReturn="True"
+  VerticalScrollBarVisibility="Visible"
+                 ></TextBox>-->
+
+
+
+        <WrapPanel Visibility="{Binding Path=MaxSizeVisibility, Mode=TwoWay, Converter={StaticResource visibilityConverter}}" Orientation="Vertical"  HorizontalAlignment="Center" MinWidth="500" Background="White">
+            <Label Margin="10,10,0,0" Content="INFORMATION : " Width="500"></Label>
+            <Label Margin="60,0,0,0" Content="{Binding Path=MessageDisplay, Mode=TwoWay}"></Label>
+            <Button Command="{Binding Path=OpenInExternalApp}" Margin="50,50,0,0" 
+                    HorizontalAlignment="Center"  VerticalAlignment="Center" 
+                    Content="click Here open  the SERACH RESULT in a file" MinWidth="400" MaxWidth="900" MinHeight="60"></Button>
+
+        </WrapPanel>
+
+
+
+
+        <TextBox 
+            Text="{Binding Path=OutputData, Mode=TwoWay}" x:Name="myUitextbox"   AcceptsReturn="True"
+  VerticalScrollBarVisibility="Visible" IsReadOnly="True"
+                 Visibility="{Binding Path=MinSizeVisibility, Mode=TwoWay, Converter={StaticResource visibilityConverter}}"
+                 ></TextBox>
+
+
+        
+
+     
+
+
+
+
+    </DockPanel>
+        
+        
 </Window>

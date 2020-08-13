@@ -1,9 +1,11 @@
 ﻿using System;
+using System.CodeDom;
 using System.Configuration;
 using System.IO;
 using System.Security.AccessControl;
+using System.Windows;
 
-namespace DataProcessor
+namespace ableD.Ui.Model
 {
     public enum TypeOfFile
     {
@@ -11,6 +13,11 @@ namespace DataProcessor
         BatchLogFile,
         CsvFile,
         other
+    }
+    public interface IFileProcessor
+    {
+        void process();
+
     }
     public class FileProcessor
     {
@@ -43,16 +50,18 @@ namespace DataProcessor
             set { _outputFileName = value; }
         }
 
-
+        public IFileProcessor TypeOfProcessor { get; set; }
 
         private string _processedDirectoryPath;
         private string _inputFileDirectoryPath;
-        TypeOfFile _processFileType = TypeOfFile.TransactionLogFile;
+        //TypeOfFile _processFileType = TypeOfFile.TransactionLogFile;
+
 
         public FileProcessor()
         {
 
         }
+
         public FileProcessor(string filePath)
         {
             _inputFilePath = filePath;
@@ -65,14 +74,16 @@ namespace DataProcessor
 
             if (!File.Exists(_inputFilePath))
             {
-                Console.WriteLine($"ERROR  : File Does not exists : {_inputFilePath}");
+                MessageBox.Show($"ERROR  : File Does not exists : {_inputFilePath}");
+                
+                
                 return;
             }
 
 
 
             //Setting Default Directory
-            if(string.IsNullOrEmpty(_outputFilePath) || string.IsNullOrWhiteSpace(_outputFilePath))
+            if (string.IsNullOrEmpty(_outputFilePath) || string.IsNullOrWhiteSpace(_outputFilePath))
             {
                 //_outputFilePath = _def
             }
@@ -94,14 +105,29 @@ namespace DataProcessor
 
             }
 
-            _processFileType = TypeOfFile.TransactionLogFile;
+            //_processFileType = TypeOfFile.TransactionLogFile;
+
+
+            if(TypeOfProcessor==null)
+            {
+                throw new NullReferenceException("TOOL BUG : -  Please report to TOOL Developer \n  Description : Log File Processor not Initialized");
+                //MessageBox.Show("BUG : -  Please report to TOOL Developer \n  Description : Log File Processor not Initialized");
+            }
+
+
+            TypeOfProcessor.process();
+
+
+            
+
+        /*
 
             switch (_processFileType)
             {
 
                 case TypeOfFile.TransactionLogFile:
 
-                    Console.WriteLine($"Transaction log File process starting : {_inputFileName} ");
+                    MessageBox.Show($"Transaction log File process starting : {_inputFileName} ");
 
 
                     // debug the error SPACE IN THE FOLDER NAME WILL GIVE ERROR, WIILE WRITING CONTENTS TO THE FILE
@@ -114,22 +140,24 @@ namespace DataProcessor
 
                 case TypeOfFile.BatchLogFile:
 
-                    Console.WriteLine($"Batch log File process starting  DOES NOT EXITS: {_inputFileName} ");
+                    MessageBox.Show($"Batch log File process starting  DOES NOT EXITS: {_inputFileName} ");
 
                     break;
 
                 case TypeOfFile.CsvFile:
 
-                    //Console.WriteLine($" CSV File process starting  DOES NOT EXITS: {_inputFileName} ");
+                    //MessageBox.Show($" CSV File process starting  DOES NOT EXITS: {_inputFileName} ");
                     //CsvFileProcessor csvProcessor = new CsvFileProcessor(_inputFilePath, @"C:\Users\Ambati\Desktop\outputfile\myoutputfile.txt");
                     //csvProcessor.Process();
 
                     break;
 
                 default:
-                    Console.WriteLine($"ERROR : There is no CODE to process this \"{_inputFileName}\" type");
+                    MessageBox.Show($"ERROR : There is no CODE to process this \"{_inputFileName}\" type");
                     break;
             }
+
+            */
 
         }
 
